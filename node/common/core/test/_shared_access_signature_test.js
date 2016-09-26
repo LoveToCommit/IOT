@@ -57,7 +57,7 @@ describe('SharedAccessSignature', function () {
     it('returns a SharedAccessSignature', function () {
       var sas = SharedAccessSignature.create('uri', 'name', 'key', 123);
       assert.instanceOf(sas, SharedAccessSignature);
-      assert.sameMembers(Object.keys(sas), ['sr', 'sig', 'se', 'skn']);
+      assert.includeMembers(Object.keys(sas), ['sr', 'sig', 'se', 'skn']);
     });
 
     /*Tests_SRS_NODE_COMMON_SAS_05_011: [The sr property shall have the value of resourceUri.]*/

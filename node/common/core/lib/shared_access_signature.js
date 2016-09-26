@@ -52,21 +52,48 @@ SharedAccessSignature.create = function create(resourceUri, keyName, key, expiry
 
   /*Codes_SRS_NODE_COMMON_SAS_05_010: [The create method shall create a new instance of SharedAccessSignature with properties: sr, sig, se, and optionally skn.]*/
   var sas = new SharedAccessSignature();
+  sas._key = key;
+  sas._extension = 3600;
   /*Codes_SRS_NODE_COMMON_SAS_05_011: [The sr property shall have the value of resourceUri.]*/
   sas.sr = resourceUri;
-  /*Codes_SRS_NODE_COMMON_SAS_05_013: [<signature> shall be an HMAC-SHA256 hash of the value <stringToSign>, which is then base64-encoded.]*/
-  /*Codes_SRS_NODE_COMMON_SAS_05_014: [<stringToSign> shall be a concatenation of resourceUri + '\n' + expiry.]*/
-  var hash = authorization.hmacHash(key, authorization.stringToSign(resourceUri, expiry));
-  /*Codes_SRS_NODE_COMMON_SAS_05_012: [The sig property shall be the result of URL-encoding the value <signature>.]*/
-  sas.sig = authorization.encodeUriComponentStrict(hash);
   /*Codes_SRS_NODE_COMMON_SAS_05_018: [If the keyName argument to the create method was falsy, skn shall not be defined.]*/
   /*Codes_SRS_NODE_COMMON_SAS_05_017: [<urlEncodedKeyName> shall be the URL-encoded value of keyName.]*/
   /*Codes_SRS_NODE_COMMON_SAS_05_016: [The skn property shall be the value <urlEncodedKeyName>.]*/
   if (keyName) sas.skn = authorization.encodeUriComponentStrict(keyName);
   /*Codes_SRS_NODE_COMMON_SAS_05_015: [The se property shall have the value of expiry.]*/
   sas.se = expiry;
-
+  /*Codes_SRS_NODE_COMMON_SAS_05_013: [<signature> shall be an HMAC-SHA256 hash of the value <stringToSign>, which is then base64-encoded.]*/
+  /*Codes_SRS_NODE_COMMON_SAS_05_014: [<stringToSign> shall be a concatenation of resourceUri + '\n' + expiry.]*/
+  /*Codes_SRS_NODE_COMMON_SAS_05_012: [The sig property shall be the result of URL-encoding the value <signature>.]*/
+  sas.sig = authorization.encodeUriComponentStrict(authorization.hmacHash(sas._key, authorization.stringToSign(sas.sr, sas.se)));
   return sas;
+};
+
+/**
+ * @method          module:azure-iot-common.SharedAccessSignature.setDefaultExtend
+ * @description     Sets the default amount from Now that a sas will be extended.
+ *
+ * @param {integer} extension       the time from Now that the sas will extend by.
+ *
+ * @throws {ReferenceError}         Will be thrown if the argument is falsy.
+ *
+ */
+SharedAccessSignature.setDefaultExtension = function setDefaultExtension(extension) {
+  if (!extension) throw new ReferenceError('extension is ' + extension);
+  this._extension = extension;
+};
+
+/**
+ * @method          module:azure-iot-common.SharedAccessSignature.extendSharedAccessSignature
+ * @description     Extend the Sas and return the string form of it.
+ *
+ * @returns {string} The string form of the shared access signature.
+ *
+ */
+SharedAccessSignature.prototype.extendSharedAccessSignature = function extendSharedAccessSignature() {
+  this.se = (Date.now() / 1000) + this._extension;
+  this.sig = authorization.encodeUriComponentStrict(authorization.hmacHash(this._key, authorization.stringToSign(this.sr, this.se)));
+  return this.toString();
 };
 
 /**
