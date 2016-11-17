@@ -4,9 +4,9 @@
 package unit.com.microsoft.azure.iothub;
 
 /**
- * Created by prmathur on 11/11/2016.
+ * Created by prmathur on 11/16/2016.
  */
-public class RunTimeTest
+public class SocketIoTest
 {
 
 }

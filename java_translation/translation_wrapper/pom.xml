@@ -29,6 +29,13 @@
             <artifactId>bcpkix-jdk15on</artifactId>
             <version>1.47</version>
         </dependency>
+        <dependency>
+            <groupId>runtime</groupId>
+            <artifactId>runtime</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/src/main/resources/mips_shared_util.jar</systemPath>
+        </dependency>
         <!-- test dependencies -->
         <dependency>
             <groupId>org.jmockit</groupId>
@@ -110,6 +117,19 @@
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>2.6</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <mainClass>translation_wrapper.com.microsoft.azure.iothub.translation_wrapper_sample</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
             </plugin>
         </plugins>
     </build>
